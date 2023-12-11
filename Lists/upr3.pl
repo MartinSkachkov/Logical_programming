@@ -32,4 +32,36 @@ nth([_|T], N, A) :- N #> 0, N1 #= N - 1, nth(T, N1, A).
 % факториел(N, F) - F = N!
 % Условие: известно е N
 факториел(0, 1).
-факториел(N, F) :- N #> 0, F #= N * F1, N #= 1 + N1, факториел(N1,F1). 
+факториел(N, F) :- N #> 0, F #= N * F1, N #= 1 + N1, факториел(N1,F1).
+
+% compress (L, S):- the list S is obtained from the
+%                   list L by compressing repeated
+%                   occurrences of elements into a single copy
+%                   of the element.
+% Условие: известно е ограничение отгоре за дължината на L
+compress([], []).   % Base Case: L = []
+compress([X], [X]). % Base Case: L has only one element
+compress([X,X|Xs], S) :- compress([X|Xs], S).
+compress([X,Y|Ys], [X|S]) :- X \= Y, compress([Y|Ys],S).
+
+% range(X, Y, L) :- creates a list L containing all the integers within
+%                   the range [X,Y]
+range(X,X,[X]). % Base Case: When the range is [3,3] for expl
+range(X,Y,[X|L]) :- X #< Y, X1 #= X + 1, range(X1, Y, L).
+
+% split (L, N,F,S) :- the list F contains the first N elements
+%                     of the list L, the list S contains the remaining elements.
+split(L,0,[],L). % Base Case: N = 0
+split([X|Tail], N, [X|Ys], S) :- N #> 0, N1 #= N - 1, split(Tail, N1, Ys, S).
+
+% rotate (L,N,X) :- the list X is
+%                   obtained from the list L by
+%                   rotating the elements of L, N places to the left.
+% N >= 0, Rotate to the left
+rotate(L,N,X) :- N #>= 0, length(L,S), P #= N mod S, rotate_left(L,P,X).
+
+% N < 0, Abstractly rotate to the right
+rotate(L,N,X) :- N #< 0, length(L,S), P #= (S + (N mod S)) mod S, rotate_left(L,P,X).
+
+rotate_left(L,0,L).
+rotate_left(L,P,X) :- P #> 0, split(L,P,S1,S2), append(S2,S1,X).
