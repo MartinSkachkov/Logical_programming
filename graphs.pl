@@ -27,6 +27,8 @@ path_from_to(G,[V,V1|X],V,W) :- edge(G,V,V1), path_from_to(G,[V1|X],V1,W).
 % път с дължина не повече от броя на върховете, вече работи и за циклични графи
 random_path(G,X,V,W) :- M #=< N, vertices_c(G,VV), len(VV,N), len(X,M), path_from_to(G,X,V,W).
 
+cycle(G,X) :- N #>= 2, vertex(G,V), random_path(G,X,V,V), len(X,N).
+
 % разстояние(G,V,W,N) - най-къс път в G от V до W e списък с дължина N+1
 % Условие: G e известен краен граф
 dist(G,V,W,N) :- N #=< VN, vertices_c(G,VV), len(VV,VN), len(X,N+1), path_from_to(G,X,V,W), %намира някакъв път
@@ -34,6 +36,15 @@ dist(G,V,W,N) :- N #=< VN, vertices_c(G,VV), len(VV,VN), len(X,N+1), path_from_t
 
 diam(G,N) :- dist(G,_,_,N), % съществува някакъв път
     		 not( (K #> N, dist(G,_,_,K)) ). % не съществува по-дълъг от най-дългият път
+
+% прост_път(G, U, V, X) - X е прост път от U до V в G
+simple_path(G,U,V,X) :-
+    N #=< VN,
+    findall(V,vertex(G,V),VV0), sort(VV0,VV),
+    len(VV,VN), len(X,N), path_from_to(G,X,U,V),
+    X=[A|Y],
+    not((append(_,[B|Z],Y), member(B,Z))), % текущият връх B не се среща напред из пътя
+    append(Y0,_,Y), not(member(A,Y0)). % А не се среща напред из пътя
 
 % ОТ ИЗПИТ
 part([],[],_,[]).

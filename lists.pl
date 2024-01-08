@@ -65,11 +65,12 @@ remove(X,A,Y) :- concat(X1,[A|X2],X), concat(X1,X2,Y).
 same_length([],[]).
 same_length([_|X],[_|Y]) :- same_length(X,Y).
 
-двупосочна_пермут(X,Y) :- same_length(X,Y), permut(X,Y).
+% за всяка двойка последователни числа на списъка Х, трябва да са в релация A #=< B
+:- use_module(library(clpfd)).
+сорт(X,Y) :- permut(X,Y), forall(append(_,[A,B|_],Y), A #=< B).
 
-
-
-
+max_el(X,E) :- member(E,X), label([E]), forall(member(B,X), E #>= B).
+min_el(X,E) :- member(E,X), label([E]), forall(member(B,X), B #>= E).
 
 
 
